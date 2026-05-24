@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sadhana Jaap Counter</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .serif-title {
+      font-family: 'Cinzel', serif;
+    }
+    /* Simple ripple animation */
+    @keyframes ripple {
+      0% { transform: scale(0.95); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .ripple-active {
+      animation: ripple 0.2s ease-out;
+    }
+  </style>
+</head>
+<body class="h-full bg-[#FAF7F2] text-[#4A3728] flex flex-col justify-between overflow-x-hidden">
+
+  <!-- Header -->
+  <header class="p-6 flex justify-between items-center max-w-lg mx-auto w-full">
+    <div class="w-10 h-10 rounded-full bg-[#FF9933]/15 flex items-center justify-center text-[#FF9933]">
+      <span class="text-xl font-bold">ॐ</span>
+    </div>
+    <h1 class="text-xl font-bold tracking-tight serif-title uppercase text-[#8B4513]">Sadhana Web</h1>
+    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-[#A0522D]">
+      <span class="material-symbols-outlined text-[20px]">spa</span>
+    </div>
+  </header>
+
+  <!-- Main Content container for layout limits -->
+  <main class="flex-1 flex flex-col justify-between max-w-lg mx-auto w-full px-6 py-2 pb-12 space-y-6">
+
+    <!-- Screen Content: COUNTER (Default active tab) -->
+    <div id="screen-counter" class="flex-1 flex flex-col justify-between items-center space-y-6">
+      
+      <!-- Current Active Mantra Status Bar -->
+      <div class="w-full bg-white/80 p-4 rounded-2xl border border-[#E8DCC4] flex flex-col items-center justify-center shadow-sm text-center">
+        <span class="text-[10px] uppercase tracking-wide text-[#A0522D] font-bold">Active Sadhana Mantra</span>
+        <h2 id="active-mantra-name" class="text-lg font-bold text-[#4A3728] mt-1">Om Namah Shivaya</h2>
+        <span id="active-mantra-deity" class="text-xs text-[#FF9933] font-medium">Deity: Lord Shiva</span>
+        <p id="active-mantra-translation" class="text-[11px] text-[#4A3728]/70 italic mt-1 font-light px-2">"Adorations to the Auspicious and Sacred Supreme Consciousness."</p>
+      </div>
+
+      <!-- Center Bead Circular Interactive Canvas / Counter Pad -->
+      <div class="relative flex flex-col items-center justify-center w-64 h-64 my-4">
+        <!-- Circular Outer Tracks -->
+        <div class="absolute inset-0 rounded-full border-8 border-[#FF9933]/10"></div>
+        <div id="rotational-ring" class="absolute inset-0 rounded-full border-8 border-t-[#FF9933] border-r-[#FF9933] border-b-transparent border-l-transparent transition-transform duration-200" style="transform: rotate(0deg)"></div>
+
+        <!-- Touch Target Central Bead Card -->
+        <button id="bead-tap-target" class="w-48 h-48 rounded-full bg-white shadow-xl flex flex-col items-center justify-center border-4 border-[#F5E6D3] active:scale-95 transition-all outline-none cursor-pointer focus:ring-4 focus:ring-[#FF9933]/20">
+          <span id="circle-mala-info" class="text-[11px] font-semibold text-[#A0522D] uppercase tracking-widest mb-1">Mala 0/11</span>
+          <span id="display-count" class="text-6xl font-light text-[#4A3728]">0</span>
+          <span class="text-[10px] text-[#8B4513]/60 font-bold tracking-wider mt-1 uppercase">OF 108 BEADS</span>
+        </button>
+      </div>
+
+      <!-- Counter Secondary Mini Controls (Decrement and Save) -->
+      <div class="flex items-center space-x-6 w-full justify-center">
+        <button id="btn-decrement" class="w-12 h-12 rounded-full bg-white border border-[#E8DCC4] text-[#FF9933] flex items-center justify-center hover:bg-[#FAF7F2] active:scale-90 transition-transform font-bold outline-none cursor-pointer disabled:opacity-40" disabled>
+          -1
+        </button>
+        <button id="btn-save-session" class="px-6 py-3 bg-[#8B4513] text-white rounded-2xl font-bold flex items-center space-x-2 shadow-md hover:bg-[#72380f] active:scale-95 transition-all cursor-pointer disabled:opacity-40" disabled>
+          <span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+          <span>Save Sadhana</span>
+        </button>
+        <button id="btn-reset" class="w-12 h-12 rounded-full bg-white border border-[#E8DCC4] text-[#4A3728] flex items-center justify-center hover:bg-[#FAF7F2] active:scale-90 transition-transform outline-none cursor-pointer">
+          <span class="material-symbols-outlined text-[20px]">refresh</span>
+        </button>
+      </div>
+
+      <!-- Daily Tracker Info Boxes -->
+      <div class="flex space-x-4 w-full">
+        <div class="flex-1 bg-white/70 p-4 rounded-2xl border border-[#E8DCC4] flex flex-col items-center justify-center shadow-sm">
+          <span class="text-[10px] uppercase tracking-widest text-[#8B4513] font-bold">Daily Goal</span>
+          <span id="stat-daily-goal" class="text-xl font-bold text-[#4A3728] mt-1">1188 Chants</span>
+        </div>
+        <div class="flex-1 bg-white/70 p-4 rounded-2xl border border-[#E8DCC4] flex flex-col items-center justify-center shadow-sm">
+          <span class="text-[10px] uppercase tracking-widest text-[#8B4513] font-bold">Completed Mins</span>
+          <span id="stat-session-mins" class="text-xl font-bold text-[#4A3728] mt-1">0:00</span>
+        </div>
+      </div>
+
+      <!-- Meditation Assist Audio Engine Card -->
+      <div class="w-full bg-[#F5EDE0] p-4 rounded-3xl flex flex-col space-y-4 shadow-sm border border-[#E8DCC4]">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div id="om-status-node" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#8B4513] shadow-sm">
+              <span class="material-symbols-outlined font-bold text-[20px]">volume_up</span>
+            </div>
+            <div>
+              <p class="font-bold text-sm text-[#4A3728]">Om Meditative Synth</p>
+              <p class="text-[11px] text-[#8B4513]/70">Low-Frequency 136.1Hz Cosmic Resonance</p>
+            </div>
+          </div>
+          <!-- Toggle switch -->
+          <button id="toggle-om-synth" class="w-12 h-6 bg-[#E8DCC4] rounded-full relative transition-colors duration-200 outline-none cursor-pointer">
+            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-200" id="switch-thumb"></div>
+          </button>
+        </div>
+
+        <div class="border-t border-[#4A3728]/10 pt-3 flex flex-col space-y-2">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+              <span class="material-symbols-outlined text-[16px] text-[#A0522D]">play_arrow</span>
+              <span class="text-xs font-bold">Auto-Jaap Mode</span>
+            </div>
+            <button id="toggle-auto-play" class="text-xs bg-white py-1 px-3 rounded-lg border border-[#E8DCC4] font-bold hover:bg-[#FAF7F2] text-[#8B4513] cursor-pointer">START</button>
+          </div>
+          <div class="flex flex-col space-y-1">
+            <div class="flex justify-between text-[10px] font-bold">
+              <span>Chant Spacing Interval</span>
+              <span id="lbl-auto-speed">4.0 seconds</span>
+            </div>
+            <input type="range" id="slider-auto-speed" min="2" max="10" step="0.5" value="4" class="w-full h-1 bg-[#E8DCC4] rounded-lg appearance-none cursor-pointer accent-[#FF9933]" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Content: MANTRAS (Hidden by default) -->
+    <div id="screen-mantras" class="hidden flex-1 flex flex-col space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-xs font-bold tracking-widest text-[#4A3728]/60 uppercase">SACRED PRESENTS & CUSTOMS</h3>
+        <button id="btn-open-add-dialog" class="bg-white border border-[#E8DCC4] text-xs font-bold px-3 py-1.5 rounded-lg text-[#FF9933] flex items-center space-x-1 shadow-sm hover:bg-[#FAF7F2] cursor-pointer">
+          <span class="material-symbols-outlined text-[14px]">add</span>
+          <span>Add Custom</span>
+        </button>
+      </div>
+
+      <div id="mantras-scroll-list" class="flex-1 space-y-3 overflow-y-auto max-h-[420px] pr-1">
+        <!-- Mantras dynamic list populated here -->
+      </div>
+    </div>
+
+    <!-- Screen Content: HISTORY (Hidden by default) -->
+    <div id="screen-history" class="hidden flex-1 flex flex-col space-y-4">
+      <!-- High Level Stats Row -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white p-4 rounded-2xl border border-[#E8DCC4] shadow-sm">
+          <span class="text-[10px] font-bold text-[#4A3728]/50 uppercase tracking-wider">TOTAL CHANTS</span>
+          <p id="stat-total-chants" class="text-2xl font-bold text-[#FF9933] mt-1">0</p>
+          <span id="stat-total-malas" class="text-[10px] text-[#4A3728]/70">0 Full Malas</span>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-[#E8DCC4] shadow-sm">
+          <span class="text-[10px] font-bold text-[#4A3728]/50 uppercase tracking-wider">MEDITATION TIME</span>
+          <p id="stat-total-hours" class="text-2xl font-bold text-[#8B4513] mt-1">0 hrs</p>
+          <span id="stat-total-sessions" class="text-[10px] text-[#4A3728]/70">0 recorded sessions</span>
+        </div>
+      </div>
+
+      <h3 class="text-xs font-bold tracking-widest text-[#4A3728]/60 uppercase mt-4">SADHANA CHRONICLE HISTORY</h3>
+      
+      <div id="history-scroll-list" class="flex-1 space-y-3 overflow-y-auto max-h-[280px] pr-1">
+        <!-- History dynamic list populated here -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Navigation Bar (Persistent Bottom) -->
+  <nav class="h-20 bg-white border-t border-[#E8DCC4] flex justify-around items-center px-4 max-w-lg mx-auto w-full">
+    <button id="nav-btn-counter" class="flex flex-col items-center flex-1 text-[#FF9933] justify-center outline-none cursor-pointer">
+      <span class="material-symbols-outlined text-[24px]">radio_button_checked</span>
+      <span class="text-[10px] mt-1 font-bold">Counter</span>
+    </button>
+    <button id="nav-btn-mantras" class="flex flex-col items-center flex-1 text-[#A0522D]/50 justify-center outline-none cursor-pointer">
+      <span class="material-symbols-outlined text-[24px]">book_sm</span>
+      <span class="text-[10px] mt-1 font-medium">Mantras</span>
+    </button>
+    <button id="nav-btn-history" class="flex flex-col items-center flex-1 text-[#A0522D]/50 justify-center outline-none cursor-pointer">
+      <span class="material-symbols-outlined text-[24px]">history</span>
+      <span class="text-[10px] mt-1 font-medium">History</span>
+    </button>
+  </nav>
+
+  <!-- Dialog / Popup: Custom Mantra Creator -->
+  <div id="add-dialog-overlay" class="hidden fixed inset-0 bg-[#4A3728]/40 backdrop-blur-xs flex items-center justify-center p-6 z-50">
+    <div class="bg-white rounded-3xl w-full max-w-md border border-[#E8DCC4] p-6 shadow-2xl space-y-4">
+      <h3 class="text-md font-bold text-[#8B4513] text-center tracking-wide uppercase">ADD SACRED MANTRAS</h3>
+      
+      <div class="flex flex-col space-y-1">
+        <label for="txt-mantra-name" class="text-[10px] font-bold text-[#4A3728]/70">MANTRA TEXT / CHANT</label>
+        <input type="text" id="txt-mantra-name" placeholder="e.g. Om Gam Ganapataye Namaha" class="border border-[#E8DCC4] rounded-xl px-4 py-2.5 text-sm focus:outline-[#FF9933]">
+      </div>
+
+      <div class="flex flex-col space-y-1">
+        <label for="txt-mantra-deity" class="text-[10px] font-bold text-[#4A3728]/70">SPIRITUAL FOCUS / DEITY</label>
+        <input type="text" id="txt-mantra-deity" placeholder="e.g. Lord Ganesha" class="border border-[#E8DCC4] rounded-xl px-4 py-2.5 text-sm focus:outline-[#FF9933]">
+      </div>
+
+      <div class="flex flex-col space-y-1">
+        <label for="txt-mantra-translation" class="text-[10px] font-bold text-[#4A3728]/70">AUSPICIOUS MEANING / TRANSLATION</label>
+        <textarea id="txt-mantra-translation" rows="2" placeholder="e.g. Lead me with obstacle-removing strength." class="border border-[#E8DCC4] rounded-xl px-4 py-2 text-sm focus:outline-[#FF9933]"></textarea>
+      </div>
+
+      <div class="flex space-x-3 pt-2">
+        <button id="btn-close-add-dialog" class="flex-1 bg-white border border-[#E8DCC4] text-xs font-bold py-3 rounded-xl text-[#4A3728]/70 cursor-pointer">CANCEL</button>
+        <button id="btn-save-custom-mantra" class="flex-1 bg-[#8B4513] text-white text-xs font-bold py-3 rounded-xl hover:bg-[#72380f] cursor-pointer">SAVE MANTRA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dialog: Success Accomplishment -->
+  <div id="success-dialog-overlay" class="hidden fixed inset-0 bg-[#4A3728]/50 backdrop-blur-xs flex items-center justify-center p-6 z-50">
+    <div class="bg-[#F5EDE0] rounded-3xl w-full max-w-sm border-2 border-[#FF9933] p-6 shadow-2xl flex flex-col items-center text-center space-y-4">
+      <span class="text-5xl">ॐ</span>
+      <h3 class="text-md font-bold text-[#8B4513] tracking-wider uppercase">SADHANA RECORDED</h3>
+      <p class="text-xs text-[#4A3728]/80 leading-relaxed">Your chanted devotion has been securely saved locally to the browser's akashic cache record history.</p>
+      
+      <div class="w-full bg-white p-3 rounded-2xl border border-[#E8DCC4]">
+        <span class="text-[10px] font-bold text-[#4A3728]/60 uppercase block">Total Chants Logged</span>
+        <span id="span-completion-chants" class="text-3xl font-extrabold text-[#FF9933] block mt-1">108</span>
+        <span id="span-completion-malas" class="text-xs text-[#8B4513] font-medium font-semibold">1 Full Mala Completed</span>
+      </div>
+
+      <button id="btn-close-success" class="w-full bg-[#8B4513] text-white text-sm font-bold py-3.5 rounded-xl hover:bg-[#72380f] cursor-pointer mt-2">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- Audio Element Placeholder & script logic -->
+  <script>
+    // State Variables
+    let currentCount = 0;
+    let completedMalas = 0;
+    let elapsedSeconds = 0;
+    let activeIntervalId = null;
+    let timerIntervalId = null;
+    let activeTab = 'counter'; // 'counter', 'mantras', 'history'
+    
+    // Web Audio Variables (For Meditative Om Synth)
+    let audioCtx = null;
+    let mainGainNode = null;
+    let nodes = []; // Keep track of active sound nodes
+    let omSynthRunning = false;
+
+    // Presets
+    const defaultMantras = [
+      { id: '1', name: 'Om Namah Shivaya', deity: 'Lord Shiva', translation: 'Adorations to the Auspicious and Sacred Supreme Consciousness.', countSelected: 4, isPreset: true },
+      { id: '2', name: 'Maha Mrityunjaya Mantra', deity: 'Lord Shiva (Conqueror over mortality)', translation: 'We worship the three-eyed Lord who nourishes and preserves life.', countSelected: 1, isPreset: true },
+      { id: '3', name: 'Gayatri Mantra', deity: 'Savitr (Divine Sun & Intelligence)', translation: 'We meditate upon that glorious light of wisdom to stimulate our intellect.', countSelected: 3, isPreset: true },
+      { id: '4', name: 'Hare Krishna Mahamantra', deity: 'Radha Krishna (Loving devotion)', translation: 'Oh divine cosmic energy of protection, guide my consciousness.', countSelected: 2, isPreset: true }
+    ];
+
+    let mantras = JSON.parse(localStorage.getItem('jaap_mantras')) || defaultMantras;
+    let selectedMantra = mantras[0];
+    let historyLogs = JSON.parse(localStorage.getItem('jaap_history')) || [];
+
+    // Audio Synth Engine (Low Frequency Meditative Drone Generator)
+    function initSynth() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        mainGainNode = audioCtx.createGain();
+        mainGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        mainGainNode.connect(audioCtx.destination);
+      }
+    }
+
+    function startSynth() {
+      initSynth();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      // Smooth volume fade in
+      mainGainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      mainGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+      mainGainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 1.5);
+
+      // We create a deep warm harmonized composite wave around OM resonance (136.1 Hz + harmonics)
+      const frequencies = [136.1, 68.05, 272.2]; // fundamental, octave down sub-harmonic, octave up harmonic
+      nodes = frequencies.map((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const filter = audioCtx.createBiquadFilter();
+        const volume = audioCtx.createGain();
+
+        // Wave types for rich overtone mix
+        osc.type = i === 1 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        // Detune a little bit for a chorus drone swell
+        if (i === 0) osc.detune.setValueAtTime(-5, audioCtx.currentTime);
+        if (i === 2) osc.detune.setValueAtTime(5, audioCtx.currentTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(300, audioCtx.currentTime); // keep it exceptionally mellow
+
+        // Mix volume
+        const val = i === 0 ? 0.3 : i === 1 ? 0.4 : 0.15;
+        volume.gain.setValueAtTime(val, audioCtx.currentTime);
+
+        osc.connect(filter);
+        filter.connect(volume);
+        volume.connect(mainGainNode);
+
+        osc.start();
+        return osc;
+      });
+
+      omSynthRunning = true;
+    }
+
+    function stopSynth() {
+      if (!mainGainNode) return;
+      
+      mainGainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      mainGainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
+
+      setTimeout(() => {
+        if (!omSynthRunning) { // Ensure they didn't quickly toggle it back on
+          nodes.forEach(osc => {
+            try { osc.stop(); } catch(e) {}
+          });
+          nodes = [];
+        }
+      }, 1000);
+
+      omSynthRunning = false;
+    }
+
+    // Toggle synth buttons
+    const btnOmSynth = document.getElementById('toggle-om-synth');
+    const thumbOmSynth = document.getElementById('switch-thumb');
+    const omStatusNodeIcon = document.getElementById('om-status-node');
+
+    btnOmSynth.addEventListener('click', () => {
+      if (omSynthRunning) {
+        stopSynth();
+        btnOmSynth.classList.remove('bg-[#FF9933]');
+        btnOmSynth.classList.add('bg-[#E8DCC4]');
+        thumbOmSynth.style.left = '4px';
+        omStatusNodeIcon.classList.remove('bg-[#FF9933]', 'text-white');
+        omStatusNodeIcon.classList.add('bg-white', 'text-[#8B4513]');
+      } else {
+        startSynth();
+        btnOmSynth.classList.remove('bg-[#E8DCC4]');
+        btnOmSynth.classList.add('bg-[#FF9933]');
+        thumbOmSynth.style.left = '24px';
+        omStatusNodeIcon.classList.remove('bg-white', 'text-[#8B4513]');
+        omStatusNodeIcon.classList.add('bg-[#FF9933]', 'text-white');
+      }
+    });
+
+    // Helper: Formats
+    function formatDuration(sec) {
+      const minutes = Math.floor(sec / 60);
+      const seconds = sec % 60;
+      return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    // Timer logic on launch
+    function startTimer() {
+      if (timerIntervalId) clearInterval(timerIntervalId);
+      timerIntervalId = setInterval(() => {
+        elapsedSeconds++;
+        document.getElementById('stat-session-mins').innerText = formatDuration(elapsedSeconds);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerIntervalId) {
+        clearInterval(timerIntervalId);
+        timerIntervalId = null;
+      }
+    }
+
+    // Interactive Tap counter
+    const beadTapTarget = document.getElementById('bead-tap-target');
+    const displayCount = document.getElementById('display-count');
+    const circleMalaInfo = document.getElementById('circle-mala-info');
+    const ring = document.getElementById('rotational-ring');
+    const btnDecrement = document.getElementById('btn-decrement');
+    const btnSaveSession = document.getElementById('btn-save-session');
+
+    function updateCounterUI() {
+      displayCount.innerText = currentCount;
+      completedMalas = Math.floor(currentCount / 108);
+      let ringRotate = ((currentCount % 108) / 108) * 360;
+      ring.style.transform = `rotate(${ringRotate}deg)`;
+      circleMalaInfo.innerText = `Mala ${completedMalas}/11`;
+
+      // Enable/disable
+      btnDecrement.disabled = currentCount <= 0;
+      btnSaveSession.disabled = currentCount <= 0;
+    }
+
+    beadTapTarget.addEventListener('click', () => {
+      // Audio synth feedback
+      if (!timerIntervalId) {
+        startTimer();
+      }
+
+      currentCount++;
+      updateCounterUI();
+
+      // Trigger ripple/bounce visual
+      beadTapTarget.classList.add('ripple-active');
+      setTimeout(() => beadTapTarget.classList.remove('ripple-active'), 200);
+
+      // Play soft tap audio beep if audioCtx is enabled
+      playTapBeep();
+    });
+
+    btnDecrement.addEventListener('click', () => {
+      if (currentCount > 0) {
+        currentCount--;
+        updateCounterUI();
+      }
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      currentCount = 0;
+      updateCounterUI();
+      stopTimer();
+      elapsedSeconds = 0;
+      document.getElementById('stat-session-mins').innerText = "0:00";
+    });
+
+    function playTapBeep() {
+      if (audioCtx) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        // Short wooden tap beep frequency
+        osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.06);
+      }
+    }
+
+    // Auto Play configuration
+    const toggleAutoPlayBtn = document.getElementById('toggle-auto-play');
+    const sliderAutoSpeed = document.getElementById('slider-auto-speed');
+    const lblAutoSpeed = document.getElementById('lbl-auto-speed');
+
+    sliderAutoSpeed.addEventListener('input', (e) => {
+      lblAutoSpeed.innerText = `${parseFloat(e.target.value).toFixed(1)} seconds`;
+      if (activeIntervalId) {
+        // Restart with newer interval
+        stopAutoChanter();
+        startAutoChanter();
+      }
+    });
+
+    function startAutoChanter() {
+      const intervalMs = parseFloat(sliderAutoSpeed.value) * 1000;
+      
+      toggleAutoPlayBtn.innerText = "STOP";
+      toggleAutoPlayBtn.classList.remove('text-[#8B4513]', 'bg-white');
+      toggleAutoPlayBtn.classList.add('bg-[#FF9933]', 'text-white');
+
+      if (!timerIntervalId) startTimer();
+
+      activeIntervalId = setInterval(() => {
+        currentCount++;
+        updateCounterUI();
+        playTapBeep();
+      }, intervalMs);
+    }
+
+    function stopAutoChanter() {
+      if (activeIntervalId) {
+        clearInterval(activeIntervalId);
+        activeIntervalId = null;
+      }
+      toggleAutoPlayBtn.innerText = "START";
+      toggleAutoPlayBtn.classList.add('text-[#8B4513]', 'bg-white');
+      toggleAutoPlayBtn.classList.remove('bg-[#FF9933]', 'text-white');
+    }
+
+    toggleAutoPlayBtn.addEventListener('click', () => {
+      if (activeIntervalId) {
+        stopAutoChanter();
+      } else {
+        startAutoChanter();
+      }
+    });
+
+    // Custom Mantra Drawer Dialog
+    const addDialogOverlay = document.getElementById('add-dialog-overlay');
+    document.getElementById('btn-open-add-dialog').addEventListener('click', () => {
+      addDialogOverlay.classList.remove('hidden');
+    });
+    document.getElementById('btn-close-add-dialog').addEventListener('click', () => {
+      addDialogOverlay.classList.add('hidden');
+    });
+
+    document.getElementById('btn-save-custom-mantra').addEventListener('click', () => {
+      const name = document.getElementById('txt-mantra-name').value.trim();
+      const deity = document.getElementById('txt-mantra-deity').value.trim() || 'Cosmic Focus';
+      const translation = document.getElementById('txt-mantra-translation').value.trim() || 'Self-composed peaceful vibration.';
+
+      if (name) {
+        const customItem = {
+          id: Date.now().toString(),
+          name,
+          deity,
+          translation,
+          countSelected: 1,
+          isPreset: false
+        };
+        mantras.push(customItem);
+        localStorage.setItem('jaap_mantras', JSON.stringify(mantras));
+        renderMantrasTab();
+        
+        // Clean fields
+        document.getElementById('txt-mantra-name').value = '';
+        document.getElementById('txt-mantra-deity').value = '';
+        document.getElementById('txt-mantra-translation').value = '';
+
+        addDialogOverlay.classList.add('hidden');
+      }
+    });
+
+    // Save active Sadhana log
+    btnSaveSession.addEventListener('click', () => {
+      if (currentCount <= 0) return;
+
+      stopTimer();
+      stopAutoChanter();
+
+      const newLog = {
+        id: Date.now().toString(),
+        mantraName: selectedMantra.name,
+        deity: selectedMantra.deity,
+        count: currentCount,
+        completedMalas: completedMalas,
+        durationSeconds: elapsedSeconds || 1,
+        timestamp: Date.now()
+      };
+
+      // Add to front of history
+      historyLogs.unshift(newLog);
+      localStorage.setItem('jaap_history', JSON.stringify(historyLogs));
+
+      // Trigger Completion Popup Dialogue Dialog
+      document.getElementById('span-completion-chants').innerText = currentCount;
+      document.getElementById('span-completion-malas').innerText = `${completedMalas} Full Mala(s) Completed`;
+      document.getElementById('success-dialog-overlay').classList.remove('hidden');
+
+      // Sync active stats & Reset Counter
+      currentCount = 0;
+      elapsedSeconds = 0;
+      updateCounterUI();
+      document.getElementById('stat-session-mins').innerText = "0:00";
+    });
+
+    document.getElementById('btn-close-success').addEventListener('click', () => {
+      document.getElementById('success-dialog-overlay').classList.add('hidden');
+      renderHistoryTab();
+    });
+
+    // Populate Mantras Tab
+    function renderMantrasTab() {
+      const parent = document.getElementById('mantras-scroll-list');
+      parent.innerHTML = '';
+
+      mantras.forEach(m => {
+        const isSel = selectedMantra.id === m.id;
+        const outerClass = isSel 
+          ? 'bg-[#F5EDE0] border-2 border-[#FF9933] shadow-inner' 
+          : 'bg-white border border-[#E8DCC4] shadow-xs';
+        
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-2xl transition-all cursor-pointer flex flex-col space-y-2 ${outerClass}`;
+        
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <h4 class="font-bold text-md ${isSel ? 'text-[#8B4513]' : 'text-[#4A3728]'}">${m.name}</h4>
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded-md ${isSel ? 'bg-[#FF9933]/20 text-[#FF9933]' : 'bg-[#FAF7F2] border border-[#E8DCC4] text-[#4A3728]/50'}">${m.deity}</span>
+          </div>
+          <p class="text-[11px] font-medium text-[#4A3728]/70 italic font-light">"${m.translation}"</p>
+          <div class="flex items-center space-x-1.5 pt-1">
+            <span class="material-symbols-outlined text-[12px] text-[#A0522D]">star</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider text-[#A0522D]/70">Selected for Sadhana</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          selectedMantra = m;
+          // Increment count selected
+          m.countSelected = (m.countSelected || 0) + 1;
+          localStorage.setItem('jaap_mantras', JSON.stringify(mantras));
+
+          // Set core headers
+          document.getElementById('active-mantra-name').innerText = m.name;
+          document.getElementById('active-mantra-deity').innerText = `Deity: ${m.deity}`;
+          document.getElementById('active-mantra-translation').innerText = `"${m.translation}"`;
+
+          renderMantrasTab();
+          
+          // Flash back to the Counter Tab automatically for smooth experience
+          switchTab('counter');
+        });
+
+        parent.appendChild(card);
+      });
+    }
+
+    // Populate History Logs
+    function renderHistoryTab() {
+      const parent = document.getElementById('history-scroll-list');
+      parent.innerHTML = '';
+
+      let totalChantsValue = 0;
+      let totalSecondsValue = 0;
+
+      historyLogs.forEach(h => {
+        totalChantsValue += h.count;
+        totalSecondsValue += h.durationSeconds;
+
+        const dateStr = new Date(h.timestamp).toLocaleDateString(undefined, { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+
+        const card = document.createElement('div');
+        card.className = 'bg-white p-4 rounded-2xl border border-[#E8DCC4] flex justify-between items-center shadow-xs';
+        
+        card.innerHTML = `
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-sm text-[#8B4513]">${h.mantraName}</span>
+              <span class="text-[8px] bg-[#FF9933]/15 text-[#FF9933] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wide">Mala Completed</span>
+            </div>
+            <p class="text-[10px] text-[#4A3728]/60">${h.deity}  •  ${formatDuration(h.durationSeconds)} mins</p>
+            <span class="text-[9px] text-[#4A3728]/40 block">${dateStr}</span>
+          </div>
+          <div class="flex items-center space-x-3 ml-2">
+            <div class="text-right">
+              <span class="font-black text-sm text-[#FF9933] block">${h.count} chants</span>
+              <span class="text-[9px] text-[#4A3728]/55">${h.completedMalas} Malas</span>
+            </div>
+            <button class="text-[#A0522D] hover:text-red-500 transition-colors p-1 flex justify-center items-center outline-none cursor-pointer" onclick="deleteHistoryItem('${h.id}', event)">
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+          </div>
+        `;
+
+        parent.appendChild(card);
+      });
+
+      if (historyLogs.length === 0) {
+        parent.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-12 text-center opacity-60">
+            <span class="material-symbols-outlined text-[36px] text-[#8B4513]">info</span>
+            <p class="text-xs font-medium text-[#4A3728] mt-2">No recorded sadhana sessions. Begin your Japa chants!</p>
+          </div>
+        `;
+      }
+
+      // Update calculations stats
+      document.getElementById('stat-total-chants').innerText = totalChantsValue;
+      document.getElementById('stat-total-malas').innerText = `${Math.floor(totalChantsValue / 108)} Full Malas`;
+      document.getElementById('stat-total-hours').innerText = (totalSecondsValue / 3600).toFixed(1) + " hrs";
+      document.getElementById('stat-total-sessions').innerText = `${historyLogs.length} logged sessions`;
+    }
+
+    // Global delete scope
+    window.deleteHistoryItem = function(id, evt) {
+      if (evt) evt.stopPropagation();
+      historyLogs = historyLogs.filter(h => h.id !== id);
+      localStorage.setItem('jaap_history', JSON.stringify(historyLogs));
+      renderHistoryTab();
+    };
+
+    // Tab switcher logic
+    const navCounter = document.getElementById('nav-btn-counter');
+    const navMantras = document.getElementById('nav-btn-mantras');
+    const navHistory = document.getElementById('nav-btn-history');
+
+    const scrCounter = document.getElementById('screen-counter');
+    const scrMantras = document.getElementById('screen-mantras');
+    const scrHistory = document.getElementById('screen-history');
+
+    function switchTab(target) {
+      activeTab = target;
+      
+      // Reset classes
+      navCounter.classList.replace('text-[#FF9933]', 'text-[#A0522D]/50');
+      navCounter.querySelector('span:last-child').classList.replace('font-bold', 'font-medium');
+      
+      navMantras.classList.replace('text-[#FF9933]', 'text-[#A0522D]/50');
+      navMantras.querySelector('span:last-child').classList.replace('font-bold', 'font-medium');
+      
+      navHistory.classList.replace('text-[#FF9933]', 'text-[#A0522D]/50');
+      navHistory.querySelector('span:last-child').classList.replace('font-bold', 'font-medium');
+
+      scrCounter.classList.add('hidden');
+      scrMantras.classList.add('hidden');
+      scrHistory.classList.add('hidden');
+
+      if (target === 'counter') {
+        scrCounter.classList.remove('hidden');
+        navCounter.classList.replace('text-[#A0522D]/50', 'text-[#FF9933]');
+        navCounter.querySelector('span:last-child').classList.replace('font-medium', 'font-bold');
+      } else if (target === 'mantras') {
+        scrMantras.classList.remove('hidden');
+        navMantras.classList.replace('text-[#A0522D]/50', 'text-[#FF9933]');
+        navMantras.querySelector('span:last-child').classList.replace('font-medium', 'font-bold');
+        renderMantrasTab();
+      } else if (target === 'history') {
+        scrHistory.classList.remove('hidden');
+        navHistory.classList.replace('text-[#A0522D]/50', 'text-[#FF9933]');
+        navHistory.querySelector('span:last-child').classList.replace('font-medium', 'font-bold');
+        renderHistoryTab();
+      }
+    }
+
+    navCounter.addEventListener('click', () => switchTab('counter'));
+    navMantras.addEventListener('click', () => switchTab('mantras'));
+    navHistory.addEventListener('click', () => switchTab('history'));
+
+    // App Initialization
+    updateCounterUI();
+    renderMantrasTab();
+    renderHistoryTab();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Jaap Counter",
+  "description": "A modern traditional Hindu beads tracker (Mala) with a personalized mantra library, detailed session history, progress insights, and an immersive, synthesized Om cosmic vibratory sound drone.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
